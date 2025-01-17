@@ -171,12 +171,6 @@ ALTER TABLE ONLY public.tenants ALTER COLUMN id SET DEFAULT nextval('public.tena
 ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
 
 
---
--- TOC entry 3338 (class 0 OID 49441)
--- Dependencies: 214
--- Data for Name: stocks; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
 COPY public.stocks (id, tenant_id, product_name, quantity, updated_at) FROM stdin;
 16	1	Laptop	50	2024-11-25 11:57:42.581789
 17	1	Mouse	200	2024-11-25 11:57:42.581789
@@ -190,29 +184,16 @@ COPY public.stocks (id, tenant_id, product_name, quantity, updated_at) FROM stdi
 25	2	Power Bank	180	2024-11-25 11:57:42.581789
 \.
 
-
---
--- TOC entry 3334 (class 0 OID 49409)
--- Dependencies: 210
--- Data for Name: tenants; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
 COPY public.tenants (id, name, domain, created_at) FROM stdin;
 1	Tenant A	tenant-a.com	2024-11-21 15:00:20.597252
 2	Tenant B	tenant-b.com	2024-11-21 15:00:20.597252
 \.
 
-
---
--- TOC entry 3336 (class 0 OID 49419)
--- Dependencies: 212
--- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
 COPY public.users (id, tenant_id, username, email, password_hash, created_at) FROM stdin;
-1	1	user1	user1@teant-a.com	hash1	2024-11-21 15:00:20.597252
+1	1	user1	user1@tenant-a.com	hash1	2024-11-21 15:00:20.597252
 2	2	user2	user2@tenant-b.com	hash2	2024-11-21 15:00:20.597252
 \.
+
 
 
 --

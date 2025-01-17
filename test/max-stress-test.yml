@@ -1,0 +1,78 @@
+config:
+  # Base URL of the server to which requests will be sent
+  target: "http://localhost:3000"  # Change this to your server's URL
+  
+  # Definition of load phases
+  phases:
+    # Initial phase to warm up the server with low load
+    - duration: 120  # Duration of 2 minutes
+      arrivalRate: 5  # 5 users per second
+      name: "Initial low load"
+    
+    # Phase with gradual user load increase
+    - duration: 240  # Duration of 4 minutes
+      arrivalRate: 5  # Start with 5 users per second
+      rampTo: 15  # Gradually increase to 15 users per second
+      name: "Moderate load increase"
+    
+    # Steady phase with sustained moderate load
+    - duration: 300  # Duration of 5 minutes
+      arrivalRate: 15  # Maintain 15 users per second
+      name: "Steady load"
+
+  # HTTP configuration for requests
+  http:
+    timeout: 30000  # Maximum response wait time (30 seconds)
+
+  # Data file to be used in the test
+  payload:
+    path: "users.csv"  # CSV file containing test data
+    fields:
+      - "username"  # Username
+      - "email"  # Email address
+      - "password"  # Password
+      - "tenantId"  # Tenant ID
+
+# Definition of scenarios and test flow
+scenarios:
+  - name: "Test with dynamic IDs"  # Scenario name
+    flow:
+      # Step 1: Insert a new user
+      - log: "Inserting user for tenant {{ tenantId }}"
+      - post:
+          url: "/userprofile"  # Endpoint to create a user
+          json:
+            username: "{{ username }}"  # Data from the CSV file
+            email: "{{ email }}"
+            password: "{{ password }}"
+            tenantId: "{{ tenantId }}"
+          capture:
+            - json: "$.id"  # Capture the ID of the created user
+              as: "userId"  # Store as a dynamic variable
+          expect:
+            - statusCode: 201  # Expect HTTP 201 (Created)
+
+      # Step 2: Retrieve all users for the tenant
+      - log: "Fetching users for tenant {{ tenantId }}"
+      - get:
+          url: "/userprofile"  # Endpoint to fetch users
+          expect:
+            - statusCode: 200  # Expect HTTP 200 (OK)
+
+      # Step 3: Update a user using the dynamic ID
+      - log: "Updating user with dynamic ID {{ userId }}"
+      - put:
+          url: "/userprofile/{{ userId }}"  # Endpoint to update a user
+          json:
+            username: "Updated_{{ username }}"  # Update username
+            email: "{{ email }}"  # Keep email unchanged
+            password: "{{ password }}"  # Keep password unchanged
+          expect:
+            - statusCode: 200  # Expect HTTP 200 (OK)
+
+      # Step 4: Delete the user using the dynamic ID
+      - log: "Deleting user with dynamic ID {{ userId }}"
+      - delete:
+          url: "/userprofile/{{ userId }}"  # Endpoint to delete a user
+          expect:
+            - statusCode: 204  # Expect HTTP 204 (No Content)

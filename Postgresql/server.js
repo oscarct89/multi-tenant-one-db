@@ -9,7 +9,19 @@ const path = require('path'); // For file path handling
 const cors = require('cors'); // Middleware for CORS
 const helmet = require('helmet'); // Middleware for HTTP header security
 const rateLimit = require('express-rate-limit'); // Middleware for rate limiting
-require('dotenv').config(); // Load environment variables
+
+// Cargar variables de entorno
+require('dotenv').config();
+console.log('🔍 TEST_MODE desde server.js:', process.env.TEST_MODE);  // Debug log
+
+// 🔹 Forzar Modo Test si está Activado
+const isTestMode = process.env.TEST_MODE === 'true';
+
+if (isTestMode) {
+    console.log('🔹 Modo Test Activado: Autenticación Deshabilitada');
+} else {
+    console.log('🔹 Modo Normal: Autenticación Habilitada');
+}
 
 // Import routes
 const registerRoute = require('./routes/register'); // Route for registration
@@ -27,8 +39,16 @@ const app = express();
  * Middleware
  * =======================
  */
-app.use(cors()); // Enable CORS
-app.use(helmet()); // Secure headers
+app.use(cors({
+    origin: process.env.CORS_ORIGIN || 'http://your-frontend-domain.com', // Restrict origins
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
+app.use(helmet({
+    contentSecurityPolicy: process.env.NODE_ENV === 'production' ? undefined : false,
+}));
+
 app.use(express.json()); // Middleware to parse JSON body
 app.use(express.urlencoded({ extended: true })); // Middleware to parse x-www-form-urlencoded data
 
@@ -42,7 +62,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Rate limiting for login and registration routes
 const rateLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 10, // Limit each IP to 10 requests per window
+    max: 10000, // Set a realistic limit for stress testing
     message: 'Too many requests, please try again later',
 });
 app.use('/login', rateLimiter);
@@ -87,5 +107,5 @@ app.use((err, req, res) => {
  */
 const PORT = process.env.PORT || 3000; // Use port from environment variables or 3000 by default
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on http://localhost:${PORT} in ${isTestMode ? 'test' : process.env.NODE_ENV || 'development'} mode`);
 });

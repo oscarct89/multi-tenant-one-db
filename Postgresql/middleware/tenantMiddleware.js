@@ -1,60 +1,53 @@
-/**
- * ===================================================
- * Middleware to handle the tenant context with JWT
- * ===================================================
- */
+const jwt = require('jsonwebtoken'); // Library for handling JSON Web Tokens (JWT)
+const pool = require('../api/db_connections'); // Database connection pool
+require('dotenv').config(); // Load environment variables from .env file
 
-const jwt = require('jsonwebtoken'); // To decode and validate JSON Web Tokens
-const pool = require('../api/db_connections'); // Database connection configuration
-require('dotenv').config(); // To load environment variables
-
-/**
- * Middleware to validate JWT, extract tenant ID, and set active tenant
- */
 const tenantMiddleware = async (req, res, next) => {
     try {
-        // Extract the token from the Authorization header
-        const token = req.headers.authorization?.split(' ')[1];
+        // 🔹 Skip authentication in test mode
+        if (process.env.TEST_MODE === 'true') {
+            console.log('🔹 Test Mode Activated: Skipping authentication');
+            return next(); // Allow the request to proceed without authentication
+        }
 
-        // If the token is missing, return a 401 error
+        // Retrieve the token from the Authorization header
+        const token = req.headers.authorization?.split(' ')[1];
         if (!token) {
+            // If no token is provided, return a 401 Unauthorized response
             return res.status(401).json({ error: 'Authorization token is required' });
         }
 
-        // Verify and decode the token
+        // Verify the JWT token using the secret key from the environment variables
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const { tenantId } = decoded;
+        const { tenantId } = decoded; // Extract the tenantId from the decoded token payload
 
-        // If the token does not include a tenant ID, return a 403 error
-        if (!tenantId) {
-            return res.status(403).json({ error: 'Token does not contain a valid tenant ID' });
-        }
-
-        // Validate that the tenant ID is a number
-        if (isNaN(tenantId)) {
+        // Validate that tenantId is present and is a valid number
+        if (!tenantId || isNaN(tenantId)) {
             return res.status(400).json({ error: 'Tenant ID must be a valid number' });
         }
 
-        // Set the active tenant in PostgreSQL
-        console.log(`Setting tenant context for tenant ID: ${tenantId}`);
-        const query = `SET app.tenant_id = ${tenantId}`;
-        await pool.query(query);
+        // 🔹 Check if the tenant exists in the database
+        const query = 'SELECT COUNT(*) FROM tenants WHERE id = $1';
+        const result = await pool.query(query, [tenantId]);
+        if (result.rows[0].count === '0') {
+            // If no matching tenant is found, return a 400 Bad Request response
+            return res.status(400).json({ error: 'Invalid tenant' });
+        }
 
-        // Proceed to the next middleware or route
+        // Set the tenant context for the current database session
+        console.log(`Setting tenant ID: ${tenantId}`);
+        await pool.query('SET app.tenant_id = $1', [tenantId]);
+
+        // Allow the request to proceed to the next middleware or route handler
         next();
     } catch (err) {
-        console.error('Error validating token or setting tenant context:', err);
+        // Log the error message
+        console.error('Error:', err.message);
 
-        // Return an appropriate error based on the type of issue
-        if (err.name === 'JsonWebTokenError') {
-            return res.status(401).json({ error: 'Invalid token' });
-        } else if (err.name === 'TokenExpiredError') {
-            return res.status(401).json({ error: 'Token expired' });
-        } else {
-            return res.status(500).json({ error: 'Internal server error' });
-        }
+        // Handle specific JWT errors and return appropriate HTTP status codes
+        const statusCode = err.name === 'JsonWebTokenError' ? 401 : 500;
+        res.status(statusCode).json({ error: err.message || 'Internal server error' });
     }
 };
 
-// Export the middleware so it can be used in other files
-module.exports = tenantMiddleware;
+module.exports = tenantMiddleware; // Export the middleware for use in other parts of the application

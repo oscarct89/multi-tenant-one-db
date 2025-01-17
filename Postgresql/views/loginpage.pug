@@ -1,22 +1,39 @@
 doctype html
 html
     head
+        // Title of the page
         title Login Page
+        // Meta tag for character encoding
         meta(charset="utf-8")
+        // Meta tag to make the page responsive on all devices
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        // Link to Bootstrap CSS for styling
         link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css")
     body
+        // Main container with a top margin
         .container.mt-5
+            // Center the row horizontally
             .row.justify-content-center
+                // Define a column with medium size of 6
                 .col-md-6
+                    // Page header
                     h1.text-center Login
+                    // Form for user login
                     form(method="POST", action="/login") 
+                        // Input field for email
                         .mb-3
-                            label(for="email") Email
-                            input#email.form-control(type="email", name="email", placeholder="Enter your email", required=true)
+                            label(for="email") Email  // Label for the email input
+                            input#email.form-control(type="email", name="email", placeholder="Enter your email", required=true) 
+                            // Email input field with Bootstrap styling
+                        // Input field for password
                         .mb-3
-                            label(for="password") Password
-                            input#password.form-control(type="password", name="password", placeholder="Enter your password", required=true)
-                        button.btn.btn-primary.w-100(type="submit") Login
+                            label(for="password") Password  // Label for the password input
+                            input#password.form-control(type="password", name="password", placeholder="Enter your password", required=true) 
+                            // Password input field with Bootstrap styling
+                        // Submit button for the form
+                        button.btn.btn-primary.w-100(type="submit") Login  
+                        // Styled as a full-width primary button
+                    // Link to the registration page
                     .mt-3.text-center
-                        a.btn.btn-secondary(href="/registerpage") Register
+                        a.btn.btn-secondary(href="/registerpage") Register  
+                        // Styled as a secondary button

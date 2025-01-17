@@ -1,25 +1,43 @@
 doctype html
 html
     head
+        // Title of the page
         title Register Page
+        // Meta tag for character encoding
         meta(charset="utf-8")
+        // Meta tag for responsive design on all devices
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        // Link to Bootstrap CSS for styling
         link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css")
     body
+        // Main container with top margin
         .container.mt-5
+            // Row centered horizontally
             .row.justify-content-center
+                // Define a column with medium size of 6
                 .col-md-6
+                    // Page header
                     h1.text-center Register
+                    // Form for user registration
                     form(method="POST", action="/register")
+                        // Input field for tenant name
                         .mb-3
-                            label(for="name") Tenant Name
+                            label(for="name") Tenant Name  // Label for tenant name input
                             input#name.form-control(type="text", name="name", placeholder="Enter tenant name", required=true)
+                            // Text input for tenant name with Bootstrap styling
+                        // Input field for admin email
                         .mb-3
-                            label(for="email") Admin Email
+                            label(for="email") Admin Email  // Label for admin email input
                             input#email.form-control(type="email", name="email", placeholder="Enter admin email", required=true)
+                            // Email input field with Bootstrap styling
+                        // Input field for password
                         .mb-3
-                            label(for="password") Password
+                            label(for="password") Password  // Label for password input
                             input#password.form-control(type="password", name="password", placeholder="Enter password", required=true)
+                            // Password input field with Bootstrap styling
+                        // Submit button for the registration form
                         button.btn.btn-primary.w-100(type="submit") Register
-                    // Add a back button
+                        // Full-width primary button for form submission
+                    // Back to login button
                     a.btn.btn-secondary.d-block.mt-3(href="/") Back to Login
+                    // Styled as a secondary block button with margin on top
