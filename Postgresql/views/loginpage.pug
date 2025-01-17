@@ -1,21 +1,34 @@
 doctype html
 html
     head
+<<<<<<< HEAD
         // Title of the page
         title Login Page
         // Meta tag for character encoding
         meta(charset="utf-8")
         // Meta tag to make the page responsive on all devices
+=======
+        // Set the title of the page
+        title Login Page
+        // Define character encoding
+        meta(charset="utf-8")
+        // Set the viewport for responsive design
+>>>>>>> 172c3adbcba742cc00b5426af0bce6a3672e341f
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
         // Link to Bootstrap CSS for styling
         link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css")
     body
+<<<<<<< HEAD
         // Main container with a top margin
+=======
+        // Main container for the login page
+>>>>>>> 172c3adbcba742cc00b5426af0bce6a3672e341f
         .container.mt-5
             // Center the row horizontally
             .row.justify-content-center
                 // Define a column with medium size of 6
                 .col-md-6
+<<<<<<< HEAD
                     // Page header
                     h1.text-center Login
                     // Form for user login
@@ -37,3 +50,19 @@ html
                     .mt-3.text-center
                         a.btn.btn-secondary(href="/registerpage") Register  
                         // Styled as a secondary button
+=======
+                    // Header for the login page
+                    h1.text-center Login
+                    // Login form
+                    form(method="POST", action="/login")
+                        // Email input field
+                        .mb-3
+                            label(for="email") Email
+                            input#email.form-control(type="email", name="email", placeholder="Enter your email", required=true)
+                        // Password input field
+                        .mb-3
+                            label(for="password") Password
+                            input#password.form-control(type="password", name="password", placeholder="Enter your password", required=true)
+                        // Submit button for the form
+                        button.btn.btn-primary.w-100(type="submit") Login
+>>>>>>> 172c3adbcba742cc00b5426af0bce6a3672e341f

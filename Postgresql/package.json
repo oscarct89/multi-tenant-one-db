@@ -12,9 +12,11 @@
   "keywords": [
     "multi-tenant",
     "express",
-    "postgresql"
+    "postgresql",
+    "nodejs",
+    "api"
   ],
-  "author": "",
+  "author": "Your Name",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",
